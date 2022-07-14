@@ -7,7 +7,6 @@ import numpy as np
 import torch
 from torch import optim
 from torch.cuda.amp import GradScaler
-
 try:
     import wandb
 except ImportError:
@@ -30,7 +29,7 @@ from training.logger import setup_logging
 from training.params import parse_args
 from training.scheduler import cosine_lr
 from training.train import train_one_epoch, evaluate
-
+from clearml import Task
 
 def random_seed(seed=42, rank=0):
     torch.manual_seed(seed + rank)
@@ -40,6 +39,7 @@ def random_seed(seed=42, rank=0):
 
 def main():
     args = parse_args()
+    task = Task.init(project_name='xlip_clip', task_name=f'retrieval_{str(datetime.now())}')
 
     # sanitize model name for filesystem / uri use, easier if we don't use / in name as a rule?
     args.model = args.model.replace('/', '-')
